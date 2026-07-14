@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Delícia de Açaí</title>
+<title>Delícia de Açaí | Peça pelo WhatsApp</title>
 
 <meta name="description" content="Açaí artesanal 100% natural em Águas Lindas de Goiás. Monte o seu do seu jeito e peça em 1 toque pelo WhatsApp. Entrega todos os dias, das 14h às 18h.">
 <link rel="canonical" href="https://deliciadeacai.com.br/">
 
 <!-- Open Graph / WhatsApp, Instagram, Facebook -->
 <meta property="og:type" content="restaurant.menu">
-<meta property="og:title" content="Delícia de Açaí">
+<meta property="og:title" content="Delícia de Açaí | Peça pelo WhatsApp">
 <meta property="og:description" content="Açaí artesanal 100% natural em Águas Lindas de Goiás. Monte o seu do seu jeito e peça em 1 toque pelo WhatsApp.">
 <meta property="og:image" content="https://deliciadeacai.com.br/imagens/hero.webp">
 <meta property="og:image:width" content="459">
@@ -241,6 +241,8 @@
     width:26px;height:26px;border-radius:50%;background:var(--laranja);
     color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;
   }
+  .limite-tag{font-family:'Nunito Sans';font-weight:700;font-size:.78rem;color:var(--lilas);margin-left:2px;}
+  .add-chip.disabled{opacity:.4;cursor:not-allowed;}
   .size-options{display:flex;gap:10px;flex-wrap:wrap;}
   .opt-chip{
     padding:10px 18px;border-radius:14px;border:1.5px solid rgba(255,255,255,.15);
@@ -454,7 +456,11 @@
             <div class="size-options" id="sizeOptions"></div>
           </div>
           <div class="builder-step">
-            <div class="step-label"><span class="step-num">2</span>Escolha os adicionais</div>
+            <div class="step-label"><span class="step-num">2</span>Escolha os complementos <span id="complementosLimiteTag" class="limite-tag"></span></div>
+            <div class="add-grid" id="complementosGrid"></div>
+          </div>
+          <div class="builder-step">
+            <div class="step-label"><span class="step-num">3</span>Escolha os adicionais</div>
             <div class="add-grid" id="addGrid"></div>
           </div>
         </div>
@@ -463,6 +469,7 @@
           <img src="imagens/monte-seu-acai.webp" alt="Prévia do açaí montado" loading="lazy" decoding="async" width="459" height="538">
           <div class="cup-summary">
             <div class="line"><span id="sumSize">Tamanho: —</span><span id="sumSizePrice">R$ 0,00</span></div>
+            <div class="line" id="sumComplementosWrap" style="display:none;"><span id="sumComplementos">Complementos</span><span id="sumComplementosPrice">+ R$ 0,00</span></div>
             <div class="line" id="sumAddsWrap" style="display:none;"><span id="sumAdds">Adicionais</span><span id="sumAddsPrice">+ R$ 0,00</span></div>
             <div class="total-line"><span>Total</span><b id="sumTotal">R$ 0,00</b></div>
             <a href="#" id="whatsBtn" class="btn btn-primary"><svg class="icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5" /></svg> Pedir esse pelo WhatsApp</a>
@@ -559,16 +566,31 @@ const CONFIG = {
   cardapio: [
     { nome: "Trufado de Açaí com Maracujá", desc: "400ml, cobertura trufada e calda de maracujá", preco: 19.90, img: "imagens/acai-trufado-maracuja.webp" },
     { nome: "Açaí com Morango", desc: "400ml, coberto com morango picado fresco", preco: 17.90, img: "imagens/acai-morango.webp" },
-    { nome: "Açaí com Uva Verde", desc: "400ml, com fruta fresca picada na hora", preco: 18.90, img: "imagens/acai-uvaverde.webp" },
+    { nome: "Açaí Premium Kiwi ou Uva Verde", desc: "400ml, com fruta fresca picada na hora", preco: 18.90, img: "imagens/acai-premium-kiwi-uva.webp" },
     { nome: "Açaí Galáxia", desc: "Camadas com banana, granola e M&M's", preco: 21.90, img: "imagens/acai-galaxia.webp" },
     { nome: "Copão Delícia de Açaí", desc: "700ml, banana, granola e M&M's — pra dividir (ou não)", preco: 27.90, img: "imagens/copao-delicia.webp" },
   ],
 
-  // ⚠️ PLACEHOLDER — confirmar tamanhos e valores reais
+  // limiteComplementos: null = sem limite (à vontade). Número = máximo de complementos grátis.
   tamanhos: [
-    { nome: "300ml", preco: 14.90 },
-    { nome: "400ml", preco: 18.90 },
-    { nome: "500ml", preco: 22.90 },
+    { nome: "200ml", preco: 6.00, limiteComplementos: 5 },
+    { nome: "350ml", preco: 10.00, limiteComplementos: 5 },
+    { nome: "500ml", preco: 15.00, limiteComplementos: null },
+    { nome: "700ml", preco: 20.00, limiteComplementos: null },
+    { nome: "1L", preco: 30.00, limiteComplementos: null },
+    { nome: "1,5L", preco: 45.00, limiteComplementos: null },
+  ],
+
+  // Complementos são grátis (respeitando o limite por tamanho definido acima)
+  complementos: [
+    { nome: "Leite condensado" },
+    { nome: "Granola" },
+    { nome: "Amendoim" },
+    { nome: "Leite em pó" },
+    { nome: "Paçoca" },
+    { nome: "Banana" },
+    { nome: "Confete" },
+    { nome: "Ovomaltine" },
   ],
 
   // ⚠️ PLACEHOLDER — confirmar se adicionais têm custo extra ou são inclusos
@@ -666,9 +688,10 @@ document.getElementById("stickyWa").href = waLink("Oi! Vim pelo site e queria fa
 document.getElementById("mapEmbed").innerHTML = `<iframe loading="lazy" src="https://www.google.com/maps?q=${encodeURIComponent(CONFIG.endereco)}&output=embed"></iframe>`;
 
 // ---------- Monte seu Açaí ----------
-let state = { size: null, adds: new Set() };
+let state = { size: null, complementos: new Set(), adds: new Set() };
 
 const sizeOptions = document.getElementById("sizeOptions");
+let chipParaSelecionar = null;
 CONFIG.tamanhos.forEach((t, i)=>{
   const chip = document.createElement("div");
   chip.className = "opt-chip";
@@ -680,8 +703,55 @@ CONFIG.tamanhos.forEach((t, i)=>{
     updateSummary();
   });
   sizeOptions.appendChild(chip);
-  if(i===1) chip.click(); // tamanho médio pré-selecionado
+  if(i===1) chipParaSelecionar = chip; // tamanho médio pré-selecionado
 });
+
+const complementosGrid = document.getElementById("complementosGrid");
+CONFIG.complementos.forEach(c=>{
+  const chip = document.createElement("div");
+  chip.className = "add-chip";
+  chip.dataset.nome = c.nome;
+  chip.innerHTML = `<div class="check"></div><div class="name">${c.nome}</div><div class="p">Grátis</div>`;
+  chip.addEventListener("click", ()=>{
+    const limite = state.size ? state.size.limiteComplementos : null;
+    const jaSelecionado = state.complementos.has(c.nome);
+    if(!jaSelecionado && limite !== null && state.complementos.size >= limite){
+      return; // limite atingido, ignora o clique
+    }
+    chip.classList.toggle("active");
+    if(jaSelecionado){ state.complementos.delete(c.nome); }
+    else{ state.complementos.add(c.nome); }
+    updateSummary();
+  });
+  complementosGrid.appendChild(chip);
+});
+
+function aplicarLimiteComplementos(){
+  const limite = state.size ? state.size.limiteComplementos : null;
+  const tag = document.getElementById("complementosLimiteTag");
+
+  // Se o novo tamanho tem limite menor que o já selecionado, remove o excedente
+  if(limite !== null && state.complementos.size > limite){
+    const selecionados = [...state.complementos];
+    const excedentes = selecionados.slice(limite);
+    excedentes.forEach(nome=>{
+      state.complementos.delete(nome);
+      const chip = complementosGrid.querySelector(`[data-nome="${nome}"]`);
+      if(chip) chip.classList.remove("active");
+    });
+  }
+
+  // Texto do limite
+  tag.textContent = limite === null ? "(grátis, à vontade)" : `(grátis, até ${limite})`;
+
+  // Habilita/desabilita chips conforme o limite
+  complementosGrid.querySelectorAll(".add-chip").forEach(chip=>{
+    const nome = chip.dataset.nome;
+    const ativo = state.complementos.has(nome);
+    const bloqueado = limite !== null && !ativo && state.complementos.size >= limite;
+    chip.classList.toggle("disabled", bloqueado);
+  });
+}
 
 const addGrid = document.getElementById("addGrid");
 CONFIG.adicionais.forEach(a=>{
@@ -698,16 +768,31 @@ CONFIG.adicionais.forEach(a=>{
 });
 
 function updateSummary(){
+  aplicarLimiteComplementos();
+
   const sizePrice = state.size ? state.size.preco : 0;
+
+  const complementosList = [...state.complementos]; // complementos são sempre grátis
+
   const addsList = [...state.adds];
   const addsPrice = addsList.reduce((sum, name)=>{
     const a = CONFIG.adicionais.find(x=>x.nome===name);
     return sum + (a ? a.preco : 0);
   }, 0);
+
   const total = sizePrice + addsPrice;
 
   document.getElementById("sumSize").textContent = "Tamanho: " + (state.size ? state.size.nome : "—");
   document.getElementById("sumSizePrice").textContent = fmt(sizePrice);
+
+  const complementosWrap = document.getElementById("sumComplementosWrap");
+  if(complementosList.length){
+    complementosWrap.style.display = "flex";
+    document.getElementById("sumComplementos").textContent = "Complementos: " + complementosList.join(", ");
+    document.getElementById("sumComplementosPrice").textContent = "Grátis";
+  } else {
+    complementosWrap.style.display = "none";
+  }
 
   const addsWrap = document.getElementById("sumAddsWrap");
   if(addsList.length){
@@ -720,9 +805,10 @@ function updateSummary(){
 
   document.getElementById("sumTotal").textContent = fmt(total);
 
-  const msg = `Oi! Quero montar meu açaí:\n- Tamanho: ${state.size ? state.size.nome : "-"}\n${addsList.length ? "- Adicionais: " + addsList.join(", ") + "\n" : ""}- Total: ${fmt(total)}\n\nPode confirmar e me passar a forma de pagamento?`;
+  const msg = `Oi! Quero montar meu açaí:\n- Tamanho: ${state.size ? state.size.nome : "-"}\n${complementosList.length ? "- Complementos: " + complementosList.join(", ") + "\n" : ""}${addsList.length ? "- Adicionais: " + addsList.join(", ") + "\n" : ""}- Total: ${fmt(total)}\n\nPode confirmar e me passar a forma de pagamento?`;
   document.getElementById("whatsBtn").href = waLink(msg);
 }
+if(chipParaSelecionar) chipParaSelecionar.click();
 updateSummary();
 
 // ---------- Scroll reveal ----------
