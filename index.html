@@ -21,7 +21,7 @@
 
 <!-- Twitter Card (mesmo preview em outras plataformas) -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Delícia de Açaí | Peça pelo WhatsApp">
+<meta name="twitter:title" content="Delícia de Açaí">
 <meta name="twitter:description" content="Açaí artesanal 100% natural em Águas Lindas de Goiás. Monte o seu do seu jeito e peça pelo WhatsApp.">
 <meta name="twitter:image" content="https://deliciadeacai.com.br/imagens/hero.webp">
 
@@ -283,6 +283,68 @@
   .cup-summary .total-line b{font-family:'Baloo 2';font-size:1.7rem;color:var(--verde);}
   #whatsBtn{width:100%;margin-top:16px;}
 
+  /* ---------- Checkout: nome, entrega/retirada, endereço ---------- */
+  .checkout-panel{
+    margin-top:32px;padding-top:32px;border-top:1px dashed rgba(255,255,255,.15);
+  }
+  .checkout-grid{display:grid;grid-template-columns:1fr;gap:14px;max-width:520px;margin:0 auto;}
+  .field{display:flex;flex-direction:column;gap:6px;text-align:left;}
+  .field label{font-size:.82rem;font-weight:700;color:var(--creme-suave);}
+  .field input{
+    background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.15);
+    border-radius:12px;padding:11px 14px;color:var(--creme);font-family:'Nunito Sans';font-size:.92rem;
+    outline:none;transition:border-color .2s ease;
+  }
+  .field input:focus{border-color:var(--laranja);}
+  .field input::placeholder{color:rgba(255,255,255,.3);}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .field-row.cep-row{grid-template-columns:1fr auto;align-items:end;}
+  .cep-status{font-size:.78rem;padding-bottom:11px;color:var(--lilas);white-space:nowrap;}
+  .cep-status.ok{color:#B7E89A;}
+  .cep-status.erro{color:#FF9B85;}
+
+  .delivery-toggle{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:520px;margin:22px auto;}
+  .delivery-card{
+    padding:16px;border-radius:16px;border:1.5px solid rgba(255,255,255,.15);
+    background:rgba(255,255,255,.04);cursor:pointer;transition:.2s ease;text-align:center;
+    font-family:'Baloo 2';font-weight:700;color:var(--creme-suave);
+  }
+  .delivery-card span{display:block;font-size:.74rem;font-weight:600;font-family:'Nunito Sans';color:var(--lilas);margin-top:4px;}
+  .delivery-card.active{background:var(--laranja);border-color:var(--laranja);color:#fff;}
+  .delivery-card.active span{color:rgba(255,255,255,.85);}
+
+  .address-fields{max-width:520px;margin:0 auto 22px;display:flex;flex-direction:column;gap:14px;}
+
+  #finalizarBtn{max-width:520px;width:100%;margin:0 auto;display:flex;}
+  .checkout-note{font-size:.76rem;color:var(--lilas);margin-top:14px;max-width:520px;margin-left:auto;margin-right:auto;}
+  .checkout-erro{font-size:.82rem;color:#FF9B85;margin-top:10px;max-width:520px;margin-left:auto;margin-right:auto;display:none;}
+
+  /* ---------- Meus pedidos (histórico local) ---------- */
+  .historico-toggle{
+    display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.15);color:var(--lilas);font-size:.82rem;font-weight:700;
+    padding:8px 16px;border-radius:100px;cursor:pointer;margin-top:18px;
+  }
+  .historico-painel{
+    display:none;max-width:520px;margin:16px auto 0;background:rgba(0,0,0,.2);
+    border-radius:18px;padding:18px;text-align:left;
+  }
+  .historico-item{
+    padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:.85rem;color:var(--creme-suave);
+    display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  }
+  .historico-item:last-child{border-bottom:none;}
+  .historico-item b{color:#fff;font-family:'Baloo 2';}
+  .historico-item .data{font-size:.72rem;color:var(--lilas);display:block;margin-top:2px;}
+  .btn-repetir{
+    display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.15);color:var(--creme-suave);font-size:.76rem;font-weight:700;
+    padding:7px 12px;border-radius:100px;cursor:pointer;white-space:nowrap;transition:.2s ease;
+    font-family:'Nunito Sans';
+  }
+  .btn-repetir:hover{background:var(--laranja);border-color:var(--laranja);color:#fff;}
+  .historico-vazio{font-size:.85rem;color:var(--lilas);text-align:center;padding:10px 0;}
+
   /* ---------- PROMOÇÕES ---------- */
   .promo-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;}
   .promo-card{
@@ -472,9 +534,53 @@
             <div class="line" id="sumComplementosWrap" style="display:none;"><span id="sumComplementos">Complementos</span><span id="sumComplementosPrice">+ R$ 0,00</span></div>
             <div class="line" id="sumAddsWrap" style="display:none;"><span id="sumAdds">Adicionais</span><span id="sumAddsPrice">+ R$ 0,00</span></div>
             <div class="total-line"><span>Total</span><b id="sumTotal">R$ 0,00</b></div>
-            <a href="#" id="whatsBtn" class="btn btn-primary"><svg class="icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5" /></svg> Pedir esse pelo WhatsApp</a>
+            <button type="button" id="prosseguirBtn" class="btn btn-primary">Prosseguir →</button>
           </div>
         </div>
+      </div>
+
+      <div class="checkout-panel" id="checkoutPanel" style="display:none;">
+        <div class="builder-step">
+          <div class="step-label"><span class="step-num">4</span>Finalize seu pedido</div>
+        </div>
+
+        <div class="checkout-grid">
+          <div class="field">
+            <label for="clienteNome">Seu nome</label>
+            <input type="text" id="clienteNome" placeholder="Como podemos te chamar?">
+          </div>
+        </div>
+
+        <div class="delivery-toggle">
+          <div class="delivery-card" data-tipo="retirada"><svg class="icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" /><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" /><path d="M2 7h20" /><path d="M22 7v3a2 2 0 0 1-2 2 2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7" /></svg> Retirar na loja<span>Sem custo de entrega</span></div>
+          <div class="delivery-card" data-tipo="entrega"><svg class="icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="18.5" cy="17.5" r="3.5" /> <circle cx="5.5" cy="17.5" r="3.5" /> <circle cx="15" cy="5" r="1" /> <path d="M12 17.5V14l-3-3 4-3 2 3h2" /></svg> Receber em casa<span>Informe o endereço</span></div>
+        </div>
+
+        <div class="address-fields" id="addressFields" style="display:none;">
+          <div class="field-row cep-row">
+            <div class="field"><label for="cep">CEP</label><input type="text" id="cep" placeholder="00000-000" maxlength="9" inputmode="numeric"></div>
+            <div class="cep-status" id="cepStatus"></div>
+          </div>
+          <div class="field"><label for="rua">Rua</label><input type="text" id="rua" placeholder="Preenche sozinho pelo CEP"></div>
+          <div class="field-row">
+            <div class="field"><label for="numero">Número</label><input type="text" id="numero" placeholder="Ex: 123"></div>
+            <div class="field"><label for="bairro">Bairro</label><input type="text" id="bairro"></div>
+          </div>
+          <div class="field"><label for="cidade">Cidade</label><input type="text" id="cidade"></div>
+          <div class="field"><label for="referencia">Ponto de referência (opcional)</label><input type="text" id="referencia" placeholder="Ex: portão azul, perto do mercado"></div>
+        </div>
+
+        <button type="button" id="finalizarBtn" class="btn btn-primary">
+          <svg class="icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5" /></svg>
+          Enviar pedido no WhatsApp
+        </button>
+        <p class="checkout-erro" id="checkoutErro"></p>
+        <p class="checkout-note">Seus dados ficam salvos só neste navegador, pra você acompanhar seus pedidos anteriores — a loja não tem acesso a esse histórico, ele existe só pra sua referência.</p>
+      </div>
+
+      <div style="text-align:center;">
+        <button type="button" class="historico-toggle" id="historicoToggle"><svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /><path d="M12 7v5l4 2" /></svg> Meus pedidos anteriores</button>
+        <div class="historico-painel" id="historicoPainel"></div>
       </div>
     </div>
   </div>
@@ -566,7 +672,7 @@ const CONFIG = {
   cardapio: [
     { nome: "Trufado de Açaí com Maracujá", desc: "400ml, cobertura trufada e calda de maracujá", preco: 19.90, img: "imagens/acai-trufado-maracuja.webp" },
     { nome: "Açaí com Morango", desc: "400ml, coberto com morango picado fresco", preco: 17.90, img: "imagens/acai-morango.webp" },
-    { nome: "Açaí com Uva Verde", desc: "400ml, com fruta fresca picada na hora", preco: 18.90, img: "imagens/acai-uvaverde.webp" },
+    { nome: "Açaí Premium Kiwi ou Uva Verde", desc: "400ml, com fruta fresca picada na hora", preco: 18.90, img: "imagens/acai-premium-kiwi-uva.webp" },
     { nome: "Açaí Galáxia", desc: "Camadas com banana, granola e M&M's", preco: 21.90, img: "imagens/acai-galaxia.webp" },
     { nome: "Copão Delícia de Açaí", desc: "700ml, banana, granola e M&M's — pra dividir (ou não)", preco: 27.90, img: "imagens/copao-delicia.webp" },
   ],
@@ -804,12 +910,207 @@ function updateSummary(){
   }
 
   document.getElementById("sumTotal").textContent = fmt(total);
-
-  const msg = `Oi! Quero montar meu açaí:\n- Tamanho: ${state.size ? state.size.nome : "-"}\n${complementosList.length ? "- Complementos: " + complementosList.join(", ") + "\n" : ""}${addsList.length ? "- Adicionais: " + addsList.join(", ") + "\n" : ""}- Total: ${fmt(total)}\n\nPode confirmar e me passar a forma de pagamento?`;
-  document.getElementById("whatsBtn").href = waLink(msg);
 }
 if(chipParaSelecionar) chipParaSelecionar.click();
 updateSummary();
+
+// ---------- Checkout: nome, entrega/retirada, endereço, histórico ---------
+const shopSlug = CONFIG.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-");
+const HIST_KEY = `pedidos_${shopSlug}`;
+let entregaState = { tipo: null };
+
+document.getElementById("prosseguirBtn").addEventListener("click", ()=>{
+  const painel = document.getElementById("checkoutPanel");
+  painel.style.display = "block";
+  if(painel.scrollIntoView){ painel.scrollIntoView({ behavior: "smooth", block: "start" }); }
+});
+
+document.querySelectorAll(".delivery-card").forEach(card=>{
+  card.addEventListener("click", ()=>{
+    document.querySelectorAll(".delivery-card").forEach(c=>c.classList.remove("active"));
+    card.classList.add("active");
+    entregaState.tipo = card.dataset.tipo;
+    document.getElementById("addressFields").style.display = entregaState.tipo === "entrega" ? "flex" : "none";
+  });
+});
+
+// Máscara e autopreenchimento de CEP via ViaCEP
+const cepInput = document.getElementById("cep");
+cepInput.addEventListener("input", ()=>{
+  let v = cepInput.value.replace(/\D/g,"").slice(0,8);
+  cepInput.value = v.length > 5 ? v.slice(0,5) + "-" + v.slice(5) : v;
+});
+cepInput.addEventListener("blur", async ()=>{
+  const cepLimpo = cepInput.value.replace(/\D/g,"");
+  const status = document.getElementById("cepStatus");
+  if(cepLimpo.length !== 8){ return; }
+  status.textContent = "Buscando...";
+  status.className = "cep-status";
+  try{
+    const resp = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
+    const data = await resp.json();
+    if(data.erro){
+      status.textContent = "CEP não encontrado";
+      status.className = "cep-status erro";
+      return;
+    }
+    document.getElementById("rua").value = data.logradouro || "";
+    document.getElementById("bairro").value = data.bairro || "";
+    document.getElementById("cidade").value = data.localidade || "";
+    status.textContent = "Endereço encontrado ✓";
+    status.className = "cep-status ok";
+    document.getElementById("numero").focus();
+  }catch(e){
+    status.textContent = "Não deu pra buscar — preencha manualmente";
+    status.className = "cep-status erro";
+  }
+});
+
+function salvarNoHistorico(pedido){
+  try{
+    const lista = JSON.parse(localStorage.getItem(HIST_KEY) || "[]");
+    lista.unshift(pedido);
+    localStorage.setItem(HIST_KEY, JSON.stringify(lista.slice(0, 15)));
+  }catch(e){ /* localStorage indisponível — segue sem salvar histórico */ }
+}
+
+function renderHistorico(){
+  const painel = document.getElementById("historicoPainel");
+  let lista = [];
+  try{ lista = JSON.parse(localStorage.getItem(HIST_KEY) || "[]"); }catch(e){}
+  if(!lista.length){
+    painel.innerHTML = `<div class="historico-vazio">Nenhum pedido ainda por aqui.</div>`;
+    return;
+  }
+  const iconRepetir = `<svg class="icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m17 2 4 4-4 4" /><path d="M3 11v-1a4 4 0 0 1 4-4h14" /><path d="m7 22-4-4 4-4" /><path d="M21 13v1a4 4 0 0 1-4 4H3" /></svg>`;
+  painel.innerHTML = lista.map((p, i)=>{
+    const data = new Date(p.data).toLocaleString("pt-BR", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" });
+    return `<div class="historico-item">
+      <div class="historico-linha"><b>${p.tamanho}</b> — ${fmt(p.total)}<span class="data">${data} · ${p.tipoEntrega === "entrega" ? "Entrega" : "Retirada na loja"}</span></div>
+      <button type="button" class="btn-repetir" data-index="${i}">${iconRepetir} Repetir pedido</button>
+    </div>`;
+  }).join("");
+
+  painel.querySelectorAll(".btn-repetir").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const idx = Number(btn.dataset.index);
+      repetirPedido(lista[idx]);
+    });
+  });
+}
+
+function repetirPedido(pedido){
+  // Tamanho
+  const chipTamanho = [...document.querySelectorAll("#sizeOptions .opt-chip")]
+    .find(c => c.textContent.trim().startsWith(pedido.tamanho));
+  if(chipTamanho) chipTamanho.click();
+
+  // Limpa seleção atual de complementos e adicionais antes de reaplicar
+  state.complementos.forEach(nome=>{
+    const chip = document.querySelector(`#complementosGrid [data-nome="${nome}"]`);
+    if(chip) chip.click();
+  });
+  state.adds.forEach(nome=>{
+    const chip = [...document.querySelectorAll("#addGrid .add-chip")].find(c=>c.querySelector(".name")?.textContent===nome);
+    if(chip) chip.click();
+  });
+
+  // Reaplica complementos e adicionais do pedido salvo
+  (pedido.complementos||[]).forEach(nome=>{
+    const chip = document.querySelector(`#complementosGrid [data-nome="${nome}"]`);
+    if(chip && !chip.classList.contains("active") && !chip.classList.contains("disabled")) chip.click();
+  });
+  (pedido.adicionais||[]).forEach(nome=>{
+    const chip = [...document.querySelectorAll("#addGrid .add-chip")].find(c=>c.querySelector(".name")?.textContent===nome);
+    if(chip && !chip.classList.contains("active")) chip.click();
+  });
+
+  // Nome, tipo de entrega e endereço
+  document.getElementById("clienteNome").value = pedido.nome || "";
+  const cardTipo = document.querySelector(`.delivery-card[data-tipo="${pedido.tipoEntrega}"]`);
+  if(cardTipo) cardTipo.click();
+  if(pedido.tipoEntrega === "entrega" && pedido.endereco){
+    document.getElementById("cep").value = pedido.endereco.cep || "";
+    document.getElementById("rua").value = pedido.endereco.rua || "";
+    document.getElementById("numero").value = pedido.endereco.numero || "";
+    document.getElementById("bairro").value = pedido.endereco.bairro || "";
+    document.getElementById("cidade").value = pedido.endereco.cidade || "";
+    document.getElementById("referencia").value = pedido.endereco.referencia || "";
+  }
+
+  document.getElementById("historicoPainel").style.display = "none";
+  const painelCheckout = document.getElementById("checkoutPanel");
+  painelCheckout.style.display = "block";
+  if(painelCheckout.scrollIntoView){ painelCheckout.scrollIntoView({ behavior: "smooth", block: "start" }); }
+}
+
+document.getElementById("historicoToggle").addEventListener("click", ()=>{
+  const painel = document.getElementById("historicoPainel");
+  const aberto = painel.style.display === "block";
+  if(!aberto) renderHistorico();
+  painel.style.display = aberto ? "none" : "block";
+});
+
+document.getElementById("finalizarBtn").addEventListener("click", ()=>{
+  const erroEl = document.getElementById("checkoutErro");
+  erroEl.style.display = "none";
+
+  const nome = document.getElementById("clienteNome").value.trim();
+  if(!nome){
+    erroEl.textContent = "Preenche seu nome pra gente confirmar o pedido.";
+    erroEl.style.display = "block";
+    return;
+  }
+  if(!entregaState.tipo){
+    erroEl.textContent = "Escolhe se é retirada na loja ou entrega.";
+    erroEl.style.display = "block";
+    return;
+  }
+
+  let enderecoTexto = "Retirada na loja";
+  let enderecoObj = null;
+  if(entregaState.tipo === "entrega"){
+    const rua = document.getElementById("rua").value.trim();
+    const numero = document.getElementById("numero").value.trim();
+    const bairro = document.getElementById("bairro").value.trim();
+    const cidade = document.getElementById("cidade").value.trim();
+    const referencia = document.getElementById("referencia").value.trim();
+    if(!rua || !numero || !bairro){
+      erroEl.textContent = "Preenche rua, número e bairro pra gente conseguir entregar.";
+      erroEl.style.display = "block";
+      return;
+    }
+    enderecoTexto = `${rua}, ${numero} - ${bairro}, ${cidade}${referencia ? " (Referência: " + referencia + ")" : ""}`;
+    enderecoObj = { rua, numero, bairro, cidade, referencia, cep: cepInput.value };
+  }
+
+  const sizePrice = state.size ? state.size.preco : 0;
+  const complementosList = [...state.complementos];
+  const addsList = [...state.adds];
+  const addsPrice = addsList.reduce((sum, n)=>{
+    const a = CONFIG.adicionais.find(x=>x.nome===n);
+    return sum + (a ? a.preco : 0);
+  }, 0);
+  const total = sizePrice + addsPrice;
+
+  const msg = `Oi! Quero fazer um pedido:\n\n`
+    + `*Nome:* ${nome}\n`
+    + `*Tamanho:* ${state.size ? state.size.nome : "-"}\n`
+    + `*Complementos:* ${complementosList.length ? complementosList.join(", ") : "Nenhum"}\n`
+    + `*Adicionais:* ${addsList.length ? addsList.join(", ") : "Nenhum"}\n`
+    + `*${entregaState.tipo === "entrega" ? "Endereço para entrega" : "Forma de retirada"}:* ${enderecoTexto}\n\n`
+    + `*Total: ${fmt(total)}*\n\n`
+    + `Pode confirmar?`;
+
+  salvarNoHistorico({
+    data: new Date().toISOString(),
+    nome, tamanho: state.size ? state.size.nome : "-",
+    complementos: complementosList, adicionais: addsList,
+    tipoEntrega: entregaState.tipo, endereco: enderecoObj, total,
+  });
+
+  window.open(waLink(msg), "_blank");
+});
 
 // ---------- Scroll reveal ----------
 const io = new IntersectionObserver((entries)=>{
