@@ -283,6 +283,34 @@
   .cup-summary .total-line b{font-family:'Baloo 2';font-size:1.7rem;color:var(--verde);}
   #whatsBtn{width:100%;margin-top:16px;}
 
+  .cart-info{
+    display:flex;align-items:center;gap:8px;justify-content:center;
+    background:rgba(111,191,68,.14);border:1px solid rgba(111,191,68,.35);
+    border-radius:14px;padding:10px 14px;margin-top:14px;font-size:.84rem;color:#B7E89A;
+  }
+  .cart-info b{font-family:'Baloo 2';color:#fff;}
+  .cup-actions{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+
+  .cart-review{max-width:520px;margin:0 auto 22px;text-align:left;}
+  .cart-review-item{
+    display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+    border-radius:14px;padding:12px 14px;margin-bottom:10px;font-size:.85rem;color:var(--creme-suave);
+  }
+  .cart-review-item b{color:#fff;font-family:'Baloo 2';display:block;margin-bottom:2px;}
+  .cart-review-item .detalhe{font-size:.78rem;color:var(--lilas);line-height:1.5;}
+  .cart-review-item .preco{font-family:'Baloo 2';color:var(--verde);white-space:nowrap;}
+  .btn-remover-item{
+    background:none;border:none;color:var(--lilas);cursor:pointer;font-size:.78rem;
+    padding:2px 6px;flex-shrink:0;
+  }
+  .btn-remover-item:hover{color:#FF9B85;}
+  .cart-review-total{
+    display:flex;justify-content:space-between;align-items:center;padding:12px 14px 0;
+    font-family:'Baloo 2';color:#fff;font-size:1.05rem;
+  }
+  .cart-review-total b{color:var(--verde);font-size:1.4rem;}
+
   /* ---------- Checkout: nome, entrega/retirada, endereço ---------- */
   .checkout-panel{
     margin-top:32px;padding-top:32px;border-top:1px dashed rgba(255,255,255,.15);
@@ -534,7 +562,14 @@
             <div class="line" id="sumComplementosWrap" style="display:none;"><span id="sumComplementos">Complementos</span><span id="sumComplementosPrice">+ R$ 0,00</span></div>
             <div class="line" id="sumAddsWrap" style="display:none;"><span id="sumAdds">Adicionais</span><span id="sumAddsPrice">+ R$ 0,00</span></div>
             <div class="total-line"><span>Total</span><b id="sumTotal">R$ 0,00</b></div>
-            <button type="button" id="prosseguirBtn" class="btn btn-primary">Prosseguir →</button>
+            <div class="cup-actions">
+              <button type="button" id="adicionarOutroBtn" class="btn btn-ghost">+ Adicionar outro açaí</button>
+              <button type="button" id="prosseguirBtn" class="btn btn-primary">Finalizar pedido →</button>
+            </div>
+          </div>
+          <div class="cart-info" id="cartInfo" style="display:none;">
+            <svg class="icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="8" cy="21" r="1" /> <circle cx="19" cy="21" r="1" /> <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" /></svg>
+            <span id="cartCount">0 itens</span> já adicionados · <b id="cartTotalMini">R$ 0,00</b>
           </div>
         </div>
       </div>
@@ -543,6 +578,8 @@
         <div class="builder-step">
           <div class="step-label"><span class="step-num">4</span>Finalize seu pedido</div>
         </div>
+
+        <div class="cart-review" id="cartReview"></div>
 
         <div class="checkout-grid">
           <div class="field">
@@ -672,7 +709,7 @@ const CONFIG = {
   cardapio: [
     { nome: "Trufado de Açaí com Maracujá", desc: "400ml, cobertura trufada e calda de maracujá", preco: 19.90, img: "imagens/acai-trufado-maracuja.webp" },
     { nome: "Açaí com Morango", desc: "400ml, coberto com morango picado fresco", preco: 17.90, img: "imagens/acai-morango.webp" },
-    { nome: "Açaí Premium Kiwi ou Uva Verde", desc: "400ml, com fruta fresca picada na hora", preco: 18.90, img: "imagens/acai-premium-kiwi-uva.webp" },
+    { nome: "Açaí com Uva Verde", desc: "400ml, com fruta fresca picada na hora", preco: 18.90, img: "imagens/acai-uvaverde.webp" },
     { nome: "Açaí Galáxia", desc: "Camadas com banana, granola e M&M's", preco: 21.90, img: "imagens/acai-galaxia.webp" },
     { nome: "Copão Delícia de Açaí", desc: "700ml, banana, granola e M&M's — pra dividir (ou não)", preco: 27.90, img: "imagens/copao-delicia.webp" },
   ],
@@ -914,12 +951,88 @@ function updateSummary(){
 if(chipParaSelecionar) chipParaSelecionar.click();
 updateSummary();
 
+// ---------- Carrinho: múltiplos açaís no mesmo pedido ---------
+let cart = [];
+
+function itemAtual(){
+  const sizePrice = state.size ? state.size.preco : 0;
+  const complementosList = [...state.complementos];
+  const addsList = [...state.adds];
+  const addsPrice = addsList.reduce((sum, n)=>{
+    const a = CONFIG.adicionais.find(x=>x.nome===n);
+    return sum + (a ? a.preco : 0);
+  }, 0);
+  return {
+    tamanho: state.size ? state.size.nome : "-",
+    complementos: complementosList,
+    adicionais: addsList,
+    preco: sizePrice + addsPrice,
+  };
+}
+
+function resetBuilderSelection(){
+  if(chipParaSelecionar) chipParaSelecionar.click(); // volta pro tamanho padrão
+  [...state.complementos].forEach(nome=>{
+    const chip = document.querySelector(`#complementosGrid [data-nome="${nome}"]`);
+    if(chip) chip.click();
+  });
+  [...state.adds].forEach(nome=>{
+    const chip = [...document.querySelectorAll("#addGrid .add-chip")].find(c=>c.querySelector(".name")?.textContent===nome);
+    if(chip) chip.click();
+  });
+}
+
+function updateCartInfo(){
+  const info = document.getElementById("cartInfo");
+  if(!cart.length){ info.style.display = "none"; return; }
+  const total = cart.reduce((s,i)=>s+i.preco, 0);
+  info.style.display = "flex";
+  document.getElementById("cartCount").textContent = cart.length === 1 ? "1 item" : `${cart.length} itens`;
+  document.getElementById("cartTotalMini").textContent = fmt(total);
+}
+
+document.getElementById("adicionarOutroBtn").addEventListener("click", ()=>{
+  cart.push(itemAtual());
+  resetBuilderSelection();
+  updateCartInfo();
+});
+
+function renderCartReview(){
+  const wrap = document.getElementById("cartReview");
+  const total = cart.reduce((s,i)=>s+i.preco, 0);
+  wrap.innerHTML = cart.map((item, i)=>{
+    const detalhes = [
+      item.complementos.length ? "Complementos: " + item.complementos.join(", ") : null,
+      item.adicionais.length ? "Adicionais: " + item.adicionais.join(", ") : null,
+    ].filter(Boolean).join(" · ") || "Sem complementos ou adicionais";
+    return `<div class="cart-review-item">
+      <div><b>${item.tamanho}</b><div class="detalhe">${detalhes}</div></div>
+      <div style="text-align:right;">
+        <div class="preco">${fmt(item.preco)}</div>
+        <button type="button" class="btn-remover-item" data-index="${i}">Remover</button>
+      </div>
+    </div>`;
+  }).join("") + `<div class="cart-review-total"><span>${cart.length === 1 ? "1 item" : cart.length + " itens"}</span><b>${fmt(total)}</b></div>`;
+
+  wrap.querySelectorAll(".btn-remover-item").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      cart.splice(Number(btn.dataset.index), 1);
+      updateCartInfo();
+      renderCartReview();
+    });
+  });
+}
+
 // ---------- Checkout: nome, entrega/retirada, endereço, histórico ---------
 const shopSlug = CONFIG.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-");
 const HIST_KEY = `pedidos_${shopSlug}`;
 let entregaState = { tipo: null };
 
 document.getElementById("prosseguirBtn").addEventListener("click", ()=>{
+  cart.push(itemAtual());
+  resetBuilderSelection();
+  updateCartInfo();
+  renderCartReview();
   const painel = document.getElementById("checkoutPanel");
   painel.style.display = "block";
   if(painel.scrollIntoView){ painel.scrollIntoView({ behavior: "smooth", block: "start" }); }
@@ -985,8 +1098,10 @@ function renderHistorico(){
   const iconRepetir = `<svg class="icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m17 2 4 4-4 4" /><path d="M3 11v-1a4 4 0 0 1 4-4h14" /><path d="m7 22-4-4 4-4" /><path d="M21 13v1a4 4 0 0 1-4 4H3" /></svg>`;
   painel.innerHTML = lista.map((p, i)=>{
     const data = new Date(p.data).toLocaleString("pt-BR", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" });
+    const itens = p.itens || [];
+    const resumo = itens.length === 1 ? itens[0].tamanho : `${itens.length} açaís (${itens.map(it=>it.tamanho).join(", ")})`;
     return `<div class="historico-item">
-      <div class="historico-linha"><b>${p.tamanho}</b> — ${fmt(p.total)}<span class="data">${data} · ${p.tipoEntrega === "entrega" ? "Entrega" : "Retirada na loja"}</span></div>
+      <div class="historico-linha"><b>${resumo}</b> — ${fmt(p.total)}<span class="data">${data} · ${p.tipoEntrega === "entrega" ? "Entrega" : "Retirada na loja"}</span></div>
       <button type="button" class="btn-repetir" data-index="${i}">${iconRepetir} Repetir pedido</button>
     </div>`;
   }).join("");
@@ -1000,30 +1115,13 @@ function renderHistorico(){
 }
 
 function repetirPedido(pedido){
-  // Tamanho
-  const chipTamanho = [...document.querySelectorAll("#sizeOptions .opt-chip")]
-    .find(c => c.textContent.trim().startsWith(pedido.tamanho));
-  if(chipTamanho) chipTamanho.click();
+  document.getElementById("historicoPainel").style.display = "none";
 
-  // Limpa seleção atual de complementos e adicionais antes de reaplicar
-  state.complementos.forEach(nome=>{
-    const chip = document.querySelector(`#complementosGrid [data-nome="${nome}"]`);
-    if(chip) chip.click();
-  });
-  state.adds.forEach(nome=>{
-    const chip = [...document.querySelectorAll("#addGrid .add-chip")].find(c=>c.querySelector(".name")?.textContent===nome);
-    if(chip) chip.click();
-  });
-
-  // Reaplica complementos e adicionais do pedido salvo
-  (pedido.complementos||[]).forEach(nome=>{
-    const chip = document.querySelector(`#complementosGrid [data-nome="${nome}"]`);
-    if(chip && !chip.classList.contains("active") && !chip.classList.contains("disabled")) chip.click();
-  });
-  (pedido.adicionais||[]).forEach(nome=>{
-    const chip = [...document.querySelectorAll("#addGrid .add-chip")].find(c=>c.querySelector(".name")?.textContent===nome);
-    if(chip && !chip.classList.contains("active")) chip.click();
-  });
+  // Reconstrói o carrinho direto a partir dos itens salvos (sem simular clique por clique)
+  resetBuilderSelection();
+  cart = (pedido.itens || []).map(it => ({ tamanho: it.tamanho, complementos: [...it.complementos], adicionais: [...it.adicionais], preco: it.preco }));
+  updateCartInfo();
+  renderCartReview();
 
   // Nome, tipo de entrega e endereço
   document.getElementById("clienteNome").value = pedido.nome || "";
@@ -1038,7 +1136,6 @@ function repetirPedido(pedido){
     document.getElementById("referencia").value = pedido.endereco.referencia || "";
   }
 
-  document.getElementById("historicoPainel").style.display = "none";
   const painelCheckout = document.getElementById("checkoutPanel");
   painelCheckout.style.display = "block";
   if(painelCheckout.scrollIntoView){ painelCheckout.scrollIntoView({ behavior: "smooth", block: "start" }); }
@@ -1054,6 +1151,12 @@ document.getElementById("historicoToggle").addEventListener("click", ()=>{
 document.getElementById("finalizarBtn").addEventListener("click", ()=>{
   const erroEl = document.getElementById("checkoutErro");
   erroEl.style.display = "none";
+
+  if(!cart.length){
+    erroEl.textContent = "Seu carrinho está vazio — monte pelo menos um açaí antes de finalizar.";
+    erroEl.style.display = "block";
+    return;
+  }
 
   const nome = document.getElementById("clienteNome").value.trim();
   if(!nome){
@@ -1084,32 +1187,33 @@ document.getElementById("finalizarBtn").addEventListener("click", ()=>{
     enderecoObj = { rua, numero, bairro, cidade, referencia, cep: cepInput.value };
   }
 
-  const sizePrice = state.size ? state.size.preco : 0;
-  const complementosList = [...state.complementos];
-  const addsList = [...state.adds];
-  const addsPrice = addsList.reduce((sum, n)=>{
-    const a = CONFIG.adicionais.find(x=>x.nome===n);
-    return sum + (a ? a.preco : 0);
-  }, 0);
-  const total = sizePrice + addsPrice;
+  const total = cart.reduce((s,i)=>s+i.preco, 0);
+
+  const itensTexto = cart.map((item, i)=>{
+    return `*Item ${i+1} — ${item.tamanho}* (${fmt(item.preco)})\n`
+      + `  Complementos: ${item.complementos.length ? item.complementos.join(", ") : "Nenhum"}\n`
+      + `  Adicionais: ${item.adicionais.length ? item.adicionais.join(", ") : "Nenhum"}`;
+  }).join("\n\n");
 
   const msg = `Oi! Quero fazer um pedido:\n\n`
-    + `*Nome:* ${nome}\n`
-    + `*Tamanho:* ${state.size ? state.size.nome : "-"}\n`
-    + `*Complementos:* ${complementosList.length ? complementosList.join(", ") : "Nenhum"}\n`
-    + `*Adicionais:* ${addsList.length ? addsList.join(", ") : "Nenhum"}\n`
+    + `*Nome:* ${nome}\n\n`
+    + `${itensTexto}\n\n`
     + `*${entregaState.tipo === "entrega" ? "Endereço para entrega" : "Forma de retirada"}:* ${enderecoTexto}\n\n`
     + `*Total: ${fmt(total)}*\n\n`
     + `Pode confirmar?`;
 
   salvarNoHistorico({
     data: new Date().toISOString(),
-    nome, tamanho: state.size ? state.size.nome : "-",
-    complementos: complementosList, adicionais: addsList,
+    nome, itens: cart.map(i=>({ ...i })),
     tipoEntrega: entregaState.tipo, endereco: enderecoObj, total,
   });
 
   window.open(waLink(msg), "_blank");
+
+  // Limpa carrinho e formulário pra um possível novo pedido na mesma visita
+  cart = [];
+  updateCartInfo();
+  document.getElementById("checkoutPanel").style.display = "none";
 });
 
 // ---------- Scroll reveal ----------
